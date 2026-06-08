@@ -62,8 +62,6 @@
 let a = [];
 let editIndex = -1;
 
-/* Add Product */
-
 document.getElementById("addBtn").addEventListener("click", function(){
 
     let b = document.getElementById("pName").value;
@@ -71,12 +69,8 @@ document.getElementById("addBtn").addEventListener("click", function(){
     let d = document.getElementById("pImgUrl").value;
     let q = document.getElementById("discription").value;
     let s = document.getElementById("stock").value;
-
     if(b && c && d && q && s){
-
         a.push([b,c,d,q,s,0]); 
-        // 0 = user quantity
-
         clearData();
         displayProducts(a);
     }
@@ -84,13 +78,8 @@ document.getElementById("addBtn").addEventListener("click", function(){
         alert("Please fill all fields");
     }
 });
-
-/* Update Product */
-
 document.getElementById("updateBtn").addEventListener("click", function(){
-
     if(editIndex != -1){
-
         a[editIndex][0] = document.getElementById("pName").value;
         a[editIndex][1] = document.getElementById("pPrice").value;
         a[editIndex][2] = document.getElementById("pImgUrl").value;
@@ -107,17 +96,10 @@ document.getElementById("updateBtn").addEventListener("click", function(){
         alert("Select product to edit");
     }
 });
-
-/* Search */
-
 document.getElementById("search").addEventListener("keyup", function(){
-
     let b = document.getElementById("search").value.toLowerCase();
-
     let c = [];
-
     a.forEach(function(i,index){
-
         if(i[0].toLowerCase().includes(b)){
             c.push([i[0],i[1],i[2],i[3],i[4],i[5],index]);
         }
@@ -128,18 +110,11 @@ document.getElementById("search").addEventListener("keyup", function(){
 
 });
 
-/* Display */
-
 function displayProducts(x){
-
     let y = document.getElementById("productCard");
-
     let z = "";
-
     x.forEach(function(i,index){
-
         let realIndex;
-
         if(i.length == 7){
             realIndex = i[6];
         }
