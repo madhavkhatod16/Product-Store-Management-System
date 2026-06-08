@@ -8,85 +8,200 @@
         body{
             background:#f4f4f4;
         }
+
         .box{
             background:white;
             padding:20px;
             border-radius:10px;
             margin-top:30px;
         }
+
         .card img{
             height:200px;
-            width:350px;
-			margin-left:0.5%;
+            width:100%;
+            object-fit:cover;
         }
     </style>
 </head>
 <body>
+
 <div class="container">
+
     <div class="box">
+
         <h2 class="text-center mb-4">Product Store</h2>
+
         <input type="text" id="pName" class="form-control mb-3" placeholder="Product Name">
+
         <input type="number" id="pPrice" class="form-control mb-3" placeholder="Product Price">
+
         <input type="text" id="pImgUrl" class="form-control mb-3" placeholder="Image URL">
-        <button id="addBtn" class="btn btn-primary w-100">
+
+        <input type="text" id="discription" class="form-control mb-3" placeholder="Short Description">
+
+        <input type="number" id="stock" class="form-control mb-3" placeholder="Stock Units">
+
+        <button id="addBtn" class="btn btn-primary w-100 mb-2">
             Add Product
         </button>
+
+        <button id="updateBtn" class="btn btn-success w-100">
+            Update Product
+        </button>
+
         <input type="text" id="search" class="form-control mt-4" placeholder="Search Product">
+
     </div>
+
     <div class="row mt-4" id="productCard"></div>
+
 </div>
+
 <script>
+
 let a = [];
+let editIndex = -1;
+
+/* Add Product */
+
 document.getElementById("addBtn").addEventListener("click", function(){
-		let b = document.getElementById("pName").value;
-		let c = document.getElementById("pPrice").value;
-		let d = document.getElementById("pImgUrl").value;
-		if(b && c && d!=""){
-					a.push([b,c,d]);
-					document.getElementById("pName").value = "";
-					document.getElementById("pPrice").value = "";
-					document.getElementById("pImgUrl").value = "";
-					displayProducts(a);
-		}
+
+    let b = document.getElementById("pName").value;
+    let c = document.getElementById("pPrice").value;
+    let d = document.getElementById("pImgUrl").value;
+    let q = document.getElementById("discription").value;
+    let s = document.getElementById("stock").value;
+
+    if(b && c && d && q && s){
+
+        a.push([b,c,d,q,s,0]); 
+        // 0 = user quantity
+
+        clearData();
+        displayProducts(a);
+    }
     else{
         alert("Please fill all fields");
     }
 });
-document.getElementById("search").addEventListener("keyup", function(){
-    let b = document.getElementById("search").value.toLowerCase();
-    let c = [];
-    a.forEach(function(i){
-        if(i[0].toLowerCase().includes(b)){
-            c.push(i);
-			console.log(c);
-        }
-		console.log(c);
-    });
-    displayProducts(c);
+
+/* Update Product */
+
+document.getElementById("updateBtn").addEventListener("click", function(){
+
+    if(editIndex != -1){
+
+        a[editIndex][0] = document.getElementById("pName").value;
+        a[editIndex][1] = document.getElementById("pPrice").value;
+        a[editIndex][2] = document.getElementById("pImgUrl").value;
+        a[editIndex][3] = document.getElementById("discription").value;
+        a[editIndex][4] = document.getElementById("stock").value;
+
+        clearData();
+
+        editIndex = -1;
+
+        displayProducts(a);
+    }
+    else{
+        alert("Select product to edit");
+    }
 });
+
+/* Search */
+
+document.getElementById("search").addEventListener("keyup", function(){
+
+    let b = document.getElementById("search").value.toLowerCase();
+
+    let c = [];
+
+    a.forEach(function(i,index){
+
+        if(i[0].toLowerCase().includes(b)){
+            c.push([i[0],i[1],i[2],i[3],i[4],i[5],index]);
+        }
+
+    });
+
+    displayProducts(c);
+
+});
+
+/* Display */
+
 function displayProducts(x){
+
     let y = document.getElementById("productCard");
+
     let z = "";
+
     x.forEach(function(i,index){
-        z += `<div class="col-md-4 mb-4">
+
+        let realIndex;
+
+        if(i.length == 7){
+            realIndex = i[6];
+        }
+        else{
+            realIndex = index;
+        }
+
+        z += ` <div class="col-md-4 mb-4">
             <div class="card h-100 shadow">
-                <img src="${i[2]}" class="card-img-top" alt="${i[0]}">
+                <img src="${i[2]}" class="card-img-top">
                 <div class="card-body">
                     <h5>${i[0]}</h5>
                     <p class="fw-bold text-success">₹${i[1]}</p>
-                    <button class="btn btn-danger w-100"  onclick="deleteProduct(${index})"> Remove </button>
+                    <p>${i[3]}</p>
+                    <p>
+                        <b>Stock:</b> ${i[4]}
+                    </p>
+                    <div class="d-flex justify-content-center align-items-center mb-3">
+                        <button class="btn btn-danger btn-sm" onclick="minus(${realIndex})"> - </button>
+                        <span class="mx-3">  Qty : ${i[5]}</span>
+                        <button class="btn btn-success btn-sm" onclick="plus(${realIndex})">  + </button>
+                    </div>
+                    <button class="btn btn-danger w-100" onclick="deleteProduct(${realIndex})"> Remove </button>
+                    <button class="btn btn-warning w-100 mt-2" onclick="EditProduct(${realIndex})"> Edit </button>
                 </div>
             </div>
         </div>
-        `;
-    });
+		`;
+});
     y.innerHTML = z;
+}
+function plus(index){
+    if(a[index][5] < a[index][4]){
+        a[index][5]++;
+        displayProducts(a);
+    }
+}
+function minus(index){
+    if(a[index][5] > 0){
+        a[index][5]--;
+        displayProducts(a);
+    }
 }
 function deleteProduct(index){
     a.splice(index,1);
     displayProducts(a);
 }
+function EditProduct(index){
+    document.getElementById("pName").value = a[index][0];
+    document.getElementById("pPrice").value = a[index][1];
+    document.getElementById("pImgUrl").value = a[index][2];
+    document.getElementById("discription").value = a[index][3];
+    document.getElementById("stock").value = a[index][4];
+    editIndex = index;
+}
+function clearData(){
+    document.getElementById("pName").value = "";
+    document.getElementById("pPrice").value = "";
+    document.getElementById("pImgUrl").value = "";
+    document.getElementById("discription").value = "";
+    document.getElementById("stock").value = "";
+ }
 </script>
-
 </body>
 </html>
